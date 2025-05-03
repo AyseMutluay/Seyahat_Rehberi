@@ -7,282 +7,178 @@ import { useRouter, useSearchParams } from "next/navigation";
 export default function Sorular() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const soruNo = searchParams.get("soru") || "1";
+  const soruNo = parseInt(searchParams.get("soru") || "1");
   
-  const [kisiSayisi, setKisiSayisi] = useState("");
-  const [cocukSayisi, setCocukSayisi] = useState("");
-  const [tatilTipi, setTatilTipi] = useState("");
-  const [konaklama, setKonaklama] = useState("");
+  const [tercihler, setTercihler] = useState({
+    kisiSayisi: "",
+    cocukSayisi: "",
+    tatilTipi: "",
+    konaklama: "",
+    tatilSuresi: ""
+  });
 
   useEffect(() => {
-    // LocalStorage'dan mevcut tercihleri al
+    // LocalStorage'dan tercihleri al
     const kayitliTercihler = localStorage.getItem("seyahatTercihleri");
     if (kayitliTercihler) {
-      const tercihler = JSON.parse(kayitliTercihler);
-      setKisiSayisi(tercihler.kisiSayisi || "");
-      setCocukSayisi(tercihler.cocukSayisi || "");
-      setTatilTipi(tercihler.tatilTipi || "");
-      setKonaklama(tercihler.konaklama || "");
+      setTercihler(JSON.parse(kayitliTercihler));
     }
   }, []);
 
-  const handleSubmit = (value: string) => {
-    // Mevcut tercihleri al
-    const kayitliTercihler = localStorage.getItem("seyahatTercihleri");
-    const tercihler = kayitliTercihler ? JSON.parse(kayitliTercihler) : {};
+  const handleSubmit = (cevap: string) => {
+    const yeniTercihler = { ...tercihler };
     
-    // Yeni tercihi ekle
-    if (soruNo === "1") {
-      tercihler.kisiSayisi = value;
-      setKisiSayisi(value);
-    } else if (soruNo === "2") {
-      tercihler.cocukSayisi = value;
-      setCocukSayisi(value);
-    } else if (soruNo === "3") {
-      tercihler.tatilTipi = value;
-      setTatilTipi(value);
-    } else if (soruNo === "4") {
-      tercihler.konaklama = value;
-      setKonaklama(value);
+    switch (soruNo) {
+      case 1:
+        yeniTercihler.kisiSayisi = cevap;
+        break;
+      case 2:
+        yeniTercihler.cocukSayisi = cevap;
+        break;
+      case 3:
+        yeniTercihler.tatilTipi = cevap;
+        break;
+      case 4:
+        yeniTercihler.konaklama = cevap;
+        break;
+      case 5:
+        yeniTercihler.tatilSuresi = cevap;
+        break;
     }
     
-    // Tercihleri kaydet
-    localStorage.setItem("seyahatTercihleri", JSON.stringify(tercihler));
+    setTercihler(yeniTercihler);
+    localStorage.setItem("seyahatTercihleri", JSON.stringify(yeniTercihler));
     
-    // Sonraki soruya veya sonuçlara yönlendir
-    if (soruNo === "4") {
-      router.push("/sonuclar");
+    if (soruNo < 5) {
+      router.push(/sorular?soru=${soruNo + 1});
     } else {
-      router.push(`/sorular?soru=${parseInt(soruNo) + 1}`);
+      router.push("/sonuclar");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-200 via-purple-200 to-blue-100 flex items-center justify-center p-4">
-      <div className="bg-white/80 backdrop-blur-md rounded-xl p-8 max-w-md w-full shadow-lg">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">Seyahat Tercihleriniz</h1>
-        
-        <div className="mb-6">
-          <div className="flex justify-between mb-2">
-            <span className="text-sm font-medium text-gray-600">Soru {soruNo}/4</span>
-            <span className="text-sm font-medium text-gray-600">{parseInt(soruNo) * 25}%</span>
+    <div className="min-h-screen bg-white py-12 px-4">
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-white rounded-xl p-8 shadow-lg border border-[#5F1510]">
+          <div className="mb-8">
+            <div className="flex justify-between mb-2">
+              <span className="text-sm font-medium text-[#215732]">Soru {soruNo}/5</span>
+              <span className="text-sm font-medium text-[#215732]">{Math.round((soruNo / 5) * 100)}%</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-[#215732] h-2 rounded-full transition-all duration-300" 
+                style={{ width: ${(soruNo / 5) * 100}% }}
+              ></div>
+            </div>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2.5">
-            <div className="bg-pink-500 h-2.5 rounded-full" style={{ width: `${parseInt(soruNo) * 25}%` }}></div>
-          </div>
-        </div>
-        
-        <div className="space-y-8">
-          {/* Soru 1 */}
-          {soruNo === "1" && (
+
+          {soruNo === 1 && (
             <div>
-              <label className="block text-gray-700 font-medium mb-3">Seyahatinizde kaç kişi olacaksınız?</label>
-              <div className="grid grid-cols-2 gap-3">
-                <button 
-                  className={`px-4 py-3 rounded-lg transition-colors ${
-                    kisiSayisi === "1" 
-                      ? "bg-pink-500 text-white border-2 border-pink-500" 
-                      : "bg-white border-2 border-pink-300 text-gray-700 hover:bg-pink-50 hover:border-pink-500"
-                  }`}
-                  onClick={() => handleSubmit("1")}
-                >
-                  1 Kişi
-                </button>
-                <button 
-                  className={`px-4 py-3 rounded-lg transition-colors ${
-                    kisiSayisi === "2" 
-                      ? "bg-pink-500 text-white border-2 border-pink-500" 
-                      : "bg-white border-2 border-pink-300 text-gray-700 hover:bg-pink-50 hover:border-pink-500"
-                  }`}
-                  onClick={() => handleSubmit("2")}
-                >
-                  2 Kişi
-                </button>
-                <button 
-                  className={`px-4 py-3 rounded-lg transition-colors ${
-                    kisiSayisi === "3" 
-                      ? "bg-pink-500 text-white border-2 border-pink-500" 
-                      : "bg-white border-2 border-pink-300 text-gray-700 hover:bg-pink-50 hover:border-pink-500"
-                  }`}
-                  onClick={() => handleSubmit("3")}
-                >
-                  3 Kişi
-                </button>
-                <button 
-                  className={`px-4 py-3 rounded-lg transition-colors ${
-                    kisiSayisi === "4+" 
-                      ? "bg-pink-500 text-white border-2 border-pink-500" 
-                      : "bg-white border-2 border-pink-300 text-gray-700 hover:bg-pink-50 hover:border-pink-500"
-                  }`}
-                  onClick={() => handleSubmit("4+")}
-                >
-                  4+ Kişi
-                </button>
+              <h2 className="text-2xl font-bold text-[#2D2D2D] mb-6">Kaç kişi ile seyahat edeceksiniz?</h2>
+              <div className="grid grid-cols-2 gap-4">
+                {["1", "2", "3", "4+"].map((secenek) => (
+                  <button
+                    key={secenek}
+                    onClick={() => handleSubmit(secenek)}
+                    className={`p-4 rounded-lg text-lg font-semibold transition-colors ${
+                      tercihler.kisiSayisi === secenek
+                        ? "bg-[#215732] text-white"
+                        : "bg-[#F8F9FA] text-[#2D2D2D] hover:bg-[#E9ECEF] border border-[#5F1510]"
+                    }`}
+                  >
+                    {secenek}
+                  </button>
+                ))}
               </div>
             </div>
           )}
-          
-          {/* Soru 2 */}
-          {soruNo === "2" && (
+
+          {soruNo === 2 && (
             <div>
-              <label className="block text-gray-700 font-medium mb-3">Lütfen seyahatinizde yer alacak çocuk sayısını belirtiniz</label>
-              <div className="grid grid-cols-2 gap-3">
-                <button 
-                  className={`px-4 py-3 rounded-lg transition-colors ${
-                    cocukSayisi === "0" 
-                      ? "bg-pink-500 text-white border-2 border-pink-500" 
-                      : "bg-white border-2 border-pink-300 text-gray-700 hover:bg-pink-50 hover:border-pink-500"
-                  }`}
-                  onClick={() => handleSubmit("0")}
-                >
-                  0 Çocuk
-                </button>
-                <button 
-                  className={`px-4 py-3 rounded-lg transition-colors ${
-                    cocukSayisi === "1" 
-                      ? "bg-pink-500 text-white border-2 border-pink-500" 
-                      : "bg-white border-2 border-pink-300 text-gray-700 hover:bg-pink-50 hover:border-pink-500"
-                  }`}
-                  onClick={() => handleSubmit("1")}
-                >
-                  1 Çocuk
-                </button>
-                <button 
-                  className={`px-4 py-3 rounded-lg transition-colors ${
-                    cocukSayisi === "2" 
-                      ? "bg-pink-500 text-white border-2 border-pink-500" 
-                      : "bg-white border-2 border-pink-300 text-gray-700 hover:bg-pink-50 hover:border-pink-500"
-                  }`}
-                  onClick={() => handleSubmit("2")}
-                >
-                  2 Çocuk
-                </button>
-                <button 
-                  className={`px-4 py-3 rounded-lg transition-colors ${
-                    cocukSayisi === "3+" 
-                      ? "bg-pink-500 text-white border-2 border-pink-500" 
-                      : "bg-white border-2 border-pink-300 text-gray-700 hover:bg-pink-50 hover:border-pink-500"
-                  }`}
-                  onClick={() => handleSubmit("3+")}
-                >
-                  3+ Çocuk
-                </button>
+              <h2 className="text-2xl font-bold text-[#2D2D2D] mb-6">Yanınızda çocuk var mı?</h2>
+              <div className="grid grid-cols-2 gap-4">
+                {["Yok", "1 Çocuk", "2 Çocuk", "3+ Çocuk"].map((secenek) => (
+                  <button
+                    key={secenek}
+                    onClick={() => handleSubmit(secenek)}
+                    className={`p-4 rounded-lg text-lg font-semibold transition-colors ${
+                      tercihler.cocukSayisi === secenek
+                        ? "bg-[#215732] text-white"
+                        : "bg-[#F8F9FA] text-[#2D2D2D] hover:bg-[#E9ECEF] border border-[#5F1510]"
+                    }`}
+                  >
+                    {secenek}
+                  </button>
+                ))}
               </div>
             </div>
           )}
-          
-          {/* Soru 3 */}
-          {soruNo === "3" && (
+
+          {soruNo === 3 && (
             <div>
-              <label className="block text-gray-700 font-medium mb-3">Nasıl bir tatil planlıyorsunuz?</label>
-              <div className="grid grid-cols-2 gap-3">
-                <button 
-                  className={`px-4 py-3 rounded-lg transition-colors ${
-                    tatilTipi === "doğa" 
-                      ? "bg-pink-500 text-white border-2 border-pink-500" 
-                      : "bg-white border-2 border-pink-300 text-gray-700 hover:bg-pink-50 hover:border-pink-500"
-                  }`}
-                  onClick={() => handleSubmit("doğa")}
-                >
-                  Doğa
-                </button>
-                <button 
-                  className={`px-4 py-3 rounded-lg transition-colors ${
-                    tatilTipi === "tarih/kültür" 
-                      ? "bg-pink-500 text-white border-2 border-pink-500" 
-                      : "bg-white border-2 border-pink-300 text-gray-700 hover:bg-pink-50 hover:border-pink-500"
-                  }`}
-                  onClick={() => handleSubmit("tarih/kültür")}
-                >
-                  Tarih/Kültür
-                </button>
-                <button 
-                  className={`px-4 py-3 rounded-lg transition-colors ${
-                    tatilTipi === "deniz" 
-                      ? "bg-pink-500 text-white border-2 border-pink-500" 
-                      : "bg-white border-2 border-pink-300 text-gray-700 hover:bg-pink-50 hover:border-pink-500"
-                  }`}
-                  onClick={() => handleSubmit("deniz")}
-                >
-                  Deniz
-                </button>
-                <button 
-                  className={`px-4 py-3 rounded-lg transition-colors ${
-                    tatilTipi === "kayak" 
-                      ? "bg-pink-500 text-white border-2 border-pink-500" 
-                      : "bg-white border-2 border-pink-300 text-gray-700 hover:bg-pink-50 hover:border-pink-500"
-                  }`}
-                  onClick={() => handleSubmit("kayak")}
-                >
-                  Kayak
-                </button>
-                <button 
-                  className={`px-4 py-3 rounded-lg transition-colors col-span-2 ${
-                    tatilTipi === "termal" 
-                      ? "bg-pink-500 text-white border-2 border-pink-500" 
-                      : "bg-white border-2 border-pink-300 text-gray-700 hover:bg-pink-50 hover:border-pink-500"
-                  }`}
-                  onClick={() => handleSubmit("termal")}
-                >
-                  Termal
-                </button>
+              <h2 className="text-2xl font-bold text-[#2D2D2D] mb-6">Ne tür bir tatil düşünüyorsunuz?</h2>
+              <div className="grid grid-cols-2 gap-4">
+                {["Deniz", "Kültür", "Doğa", "Şehir"].map((secenek) => (
+                  <button
+                    key={secenek}
+                    onClick={() => handleSubmit(secenek)}
+                    className={`p-4 rounded-lg text-lg font-semibold transition-colors ${
+                      tercihler.tatilTipi === secenek
+                        ? "bg-[#215732] text-white"
+                        : "bg-[#F8F9FA] text-[#2D2D2D] hover:bg-[#E9ECEF] border border-[#5F1510]"
+                    }`}
+                  >
+                    {secenek}
+                  </button>
+                ))}
               </div>
             </div>
           )}
-          
-          {/* Soru 4 */}
-          {soruNo === "4" && (
+
+          {soruNo === 4 && (
             <div>
-              <label className="block text-gray-700 font-medium mb-3">Konaklama tercihiniz nedir?</label>
-              <div className="grid grid-cols-2 gap-3">
-                <button 
-                  className={`px-4 py-3 rounded-lg transition-colors ${
-                    konaklama === "pansiyon" 
-                      ? "bg-pink-500 text-white border-2 border-pink-500" 
-                      : "bg-white border-2 border-pink-300 text-gray-700 hover:bg-pink-50 hover:border-pink-500"
-                  }`}
-                  onClick={() => handleSubmit("pansiyon")}
-                >
-                  Pansiyon
-                </button>
-                <button 
-                  className={`px-4 py-3 rounded-lg transition-colors ${
-                    konaklama === "otel" 
-                      ? "bg-pink-500 text-white border-2 border-pink-500" 
-                      : "bg-white border-2 border-pink-300 text-gray-700 hover:bg-pink-50 hover:border-pink-500"
-                  }`}
-                  onClick={() => handleSubmit("otel")}
-                >
-                  Otel
-                </button>
-                <button 
-                  className={`px-4 py-3 rounded-lg transition-colors ${
-                    konaklama === "apart daire" 
-                      ? "bg-pink-500 text-white border-2 border-pink-500" 
-                      : "bg-white border-2 border-pink-300 text-gray-700 hover:bg-pink-50 hover:border-pink-500"
-                  }`}
-                  onClick={() => handleSubmit("apart daire")}
-                >
-                  Apart Daire
-                </button>
-                <button 
-                  className={`px-4 py-3 rounded-lg transition-colors ${
-                    konaklama === "tatil villası" 
-                      ? "bg-pink-500 text-white border-2 border-pink-500" 
-                      : "bg-white border-2 border-pink-300 text-gray-700 hover:bg-pink-50 hover:border-pink-500"
-                  }`}
-                  onClick={() => handleSubmit("tatil villası")}
-                >
-                  Tatil Villası
-                </button>
+              <h2 className="text-2xl font-bold text-[#2D2D2D] mb-6">Konaklama tercihiniz nedir?</h2>
+              <div className="grid grid-cols-2 gap-4">
+                {["Otel", "Pansiyon", "Apart", "Kamp"].map((secenek) => (
+                  <button
+                    key={secenek}
+                    onClick={() => handleSubmit(secenek)}
+                    className={`p-4 rounded-lg text-lg font-semibold transition-colors ${
+                      tercihler.konaklama === secenek
+                        ? "bg-[#215732] text-white"
+                        : "bg-[#F8F9FA] text-[#2D2D2D] hover:bg-[#E9ECEF] border border-[#5F1510]"
+                    }`}
+                  >
+                    {secenek}
+                  </button>
+                ))}
               </div>
             </div>
           )}
-          
-          <div className="text-center">
+
+          {soruNo === 5 && (
+            <div>
+              <h2 className="text-2xl font-bold text-[#2D2D2D] mb-6">Tatiliniz kaç gün sürecek?</h2>
+              <div className="flex flex-col gap-4">
+                <input
+                  type="number"
+                  min="1"
+                  max="30"
+                  value={tercihler.tatilSuresi}
+                  onChange={(e) => handleSubmit(e.target.value)}
+                  className="p-4 rounded-lg text-lg border border-[#5F1510] focus:outline-none focus:ring-2 focus:ring-[#215732]"
+                  placeholder="Gün sayısını giriniz"
+                />
+                <p className="text-sm text-[#666]">Lütfen 1 ile 30 arasında bir sayı giriniz</p>
+              </div>
+            </div>
+          )}
+
+          <div className="mt-8 text-center">
             <Link 
               href="/" 
-              className="text-pink-600 hover:text-pink-800 text-sm"
+              className="text-[#215732] hover:text-[#1A4428] font-medium"
             >
               Ana Sayfaya Dön
             </Link>
@@ -291,4 +187,4 @@ export default function Sorular() {
       </div>
     </div>
   );
-} 
+}
