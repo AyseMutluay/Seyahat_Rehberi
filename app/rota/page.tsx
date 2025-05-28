@@ -2,54 +2,56 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { destinasyonlar } from "@/data/destinasyonlar";
-import { Aktivite, Destinasyon } from "@/data/destinasyonlar";
+import Image from "next/image";
+import { destinasyonlar, Destinasyon, Aktivite, Yemek } from "../../data/destinasyonlar";
 
 interface GunlukPlan {
   gun: number;
   aktiviteler: Aktivite[];
-  ogleYemegi: string;
-  aksamYemegi: string;
+  ogleYemegi: Yemek;
+  aksamYemegi: Yemek;
 }
 
 export default function Rota() {
   const [tercihler, setTercihler] = useState({
-    kisiSayisi: "",
-    tatilTipi: "",
-    konaklama: "",
-    tatilSuresi: "",
-    secilenIl: ""
+    destinasyon: "",
+    gunSayisi: 3,
+    butce: "orta",
+    aktivite: "kultur",
   });
 
   const [secilenDestinasyon, setSecilenDestinasyon] = useState<Destinasyon | null>(null);
   const [gunlukPlanlar, setGunlukPlanlar] = useState<GunlukPlan[]>([]);
 
   useEffect(() => {
-    const kayitliTercihler = localStorage.getItem("seyahatTercihleri");
-    if (kayitliTercihler) {
-      const parsedTercihler = JSON.parse(kayitliTercihler);
-      setTercihler(parsedTercihler);
-
-      const destinasyon = destinasyonlar.find(d => d.sehir === parsedTercihler.secilenIl);
-      if (destinasyon) {
-        setSecilenDestinasyon(destinasyon);
-        planOlustur(destinasyon, parseInt(parsedTercihler.tatilSuresi));
-      }
+    const kaydedilenTercihler = localStorage.getItem("seyahatTercihleri");
+    if (kaydedilenTercihler) {
+      setTercihler(JSON.parse(kaydedilenTercihler));
     }
   }, []);
+
+  useEffect(() => {
+    if (tercihler.destinasyon) {
+      const destinasyon = destinasyonlar.find(
+        (d) => d.isim.toLowerCase() === tercihler.destinasyon.toLowerCase()
+      );
+      if (destinasyon) {
+        setSecilenDestinasyon(destinasyon);
+        const planlar = planOlustur(destinasyon, tercihler.gunSayisi);
+        setGunlukPlanlar(planlar);
+      }
+    }
+  }, [tercihler]);
 
   const planOlustur = (destinasyon: Destinasyon, gunSayisi: number) => {
     const planlar: GunlukPlan[] = [];
     const aktiviteler = [...destinasyon.aktiviteler];
-    const yemekler = [...destinasyon.yemek];
+    const yemekler = [...destinasyon.yemekler];
 
     for (let gun = 1; gun <= gunSayisi; gun++) {
-      // Her gün için 2 aktivite seç
-      const gunlukAktiviteler = aktiviteler.splice(0, 2);
-      
-      // Rastgele yemek seç
-      const ogleYemegi = yemekler[Math.floor(Math.random() * yemekler.length)].isim;
-      const aksamYemegi = yemekler[Math.floor(Math.random() * yemekler.length)].isim;
+      const gunlukAktiviteler = aktiviteler.slice((gun - 1) * 2, gun * 2);
+      const ogleYemegi = yemekler[gun - 1];
+      const aksamYemegi = yemekler[gun % yemekler.length];
 
       planlar.push({
         gun,
@@ -59,70 +61,97 @@ export default function Rota() {
       });
     }
 
-    setGunlukPlanlar(planlar);
+    return planlar;
   };
 
+  if (!secilenDestinasyon) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-8">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-3xl font-bold text-gray-800 mb-8">Günlük Rota</h1>
+          <p className="text-gray-600">Lütfen önce tercihlerinizi belirleyin.</p>
+          <Link
+            href="/sorular"
+            className="mt-4 inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Tercihlere Dön
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#F8F9FA] to-white">
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        {/* Başlık */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-[#2D2D2D] mb-4">
-            {secilenDestinasyon?.sehir} Tatil Rota Planınız
-          </h1>
-          <p className="text-lg text-[#666]">
-            {tercihler.tatilSuresi} günlük tatiliniz için özel olarak hazırlanmış günlük plan
-          </p>
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white p-8">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-800 mb-8">Günlük Rota</h1>
+
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <div className="flex items-center gap-6">
+            <div className="w-32 h-32 rounded-lg overflow-hidden relative">
+              <Image
+                src={secilenDestinasyon.resim}
+                alt={secilenDestinasyon.isim}
+                fill
+                className="object-cover"
+              />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-gray-800">
+                {secilenDestinasyon.isim}, {secilenDestinasyon.ulke}
+              </h2>
+              <p className="text-gray-600 mt-2">{secilenDestinasyon.aciklama}</p>
+            </div>
+          </div>
         </div>
 
-        {/* Günlük Planlar */}
-        <div className="space-y-8">
+        <div className="space-y-6">
           {gunlukPlanlar.map((plan) => (
-            <div key={plan.gun} className="bg-white rounded-2xl p-8 shadow-lg border border-[#E9ECEF]">
-              <h2 className="text-2xl font-bold text-[#215732] mb-6">Gün {plan.gun}</h2>
-              
-              {/* Aktiviteler */}
-              <div className="mb-6">
-                <h3 className="text-xl font-semibold text-[#2D2D2D] mb-4">Aktiviteler</h3>
-                <div className="space-y-4">
-                  {plan.aktiviteler.map((aktivite) => (
-                    <div key={aktivite.id} className="bg-[#F8F9FA] p-4 rounded-xl">
-                      <h4 className="font-semibold text-[#2D2D2D]">{aktivite.baslik}</h4>
-                      <p className="text-[#666]">{aktivite.aciklama}</p>
-                    </div>
-                  ))}
+            <div key={plan.gun} className="bg-white rounded-xl shadow-lg p-6">
+              <h3 className="text-xl font-bold text-gray-800 mb-4">
+                {plan.gun}. Gün
+              </h3>
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-semibold text-gray-700 mb-2">
+                    Aktiviteler
+                  </h4>
+                  <ul className="list-disc list-inside text-gray-600">
+                    {plan.aktiviteler.map((aktivite) => (
+                      <li key={aktivite.id}>
+                        <span className="font-medium">{aktivite.baslik}</span> - {aktivite.aciklama}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </div>
-
-              {/* Yemekler */}
-              <div>
-                <h3 className="text-xl font-semibold text-[#2D2D2D] mb-4">Yemek Planı</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-[#F8F9FA] p-4 rounded-xl">
-                    <h4 className="font-semibold text-[#2D2D2D]">Öğle Yemeği</h4>
-                    <p className="text-[#666]">{plan.ogleYemegi}</p>
-                  </div>
-                  <div className="bg-[#F8F9FA] p-4 rounded-xl">
-                    <h4 className="font-semibold text-[#2D2D2D]">Akşam Yemeği</h4>
-                    <p className="text-[#666]">{plan.aksamYemegi}</p>
-                  </div>
+                <div>
+                  <h4 className="font-semibold text-gray-700 mb-2">
+                    Yemekler
+                  </h4>
+                  <ul className="list-disc list-inside text-gray-600">
+                    <li>
+                      <span className="font-medium">Öğle Yemeği:</span> {plan.ogleYemegi.isim} - {plan.ogleYemegi.aciklama}
+                    </li>
+                    <li>
+                      <span className="font-medium">Akşam Yemeği:</span> {plan.aksamYemegi.isim} - {plan.aksamYemegi.aciklama}
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Butonlar */}
-        <div className="flex justify-center gap-4 mt-12">
-          <Link 
-            href="/sonuclar" 
-            className="bg-[#215732] text-white px-8 py-4 rounded-full font-semibold hover:bg-[#1A4428] transition-colors text-center"
+        <div className="mt-8 flex gap-4">
+          <Link
+            href="/sorular"
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Önceki Sayfaya Dön
+            Tercihleri Değiştir
           </Link>
-          <Link 
-            href="/" 
-            className="bg-white text-[#2D2D2D] px-8 py-4 rounded-full font-semibold hover:bg-[#F8F9FA] transition-colors border border-[#E9ECEF] text-center"
+          <Link
+            href="/"
+            className="bg-gray-200 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors"
           >
             Ana Sayfaya Dön
           </Link>
