@@ -93,7 +93,7 @@ jobs:
           args: >
             -Dsonar.projectKey=AyseMutluay_Seyahat_Rehberi
             -Dsonar.organization=aysemutluay
-            -Dsonar.sources=app,data,.
+            -Dsonar.sources=app,data
             -Dsonar.exclusions=**/.github/**,**/*.test.tsx,**/*.spec.tsx
             -Dsonar.test.inclusions=**/*.test.tsx,**/*.spec.tsx
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
