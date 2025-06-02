@@ -95,7 +95,7 @@ jobs:
             -Dsonar.sources=.
             -Dsonar.tests=.
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-            
+            -Dsonar.exclusions=**/*.svg
             # -Dsonar.verbose=true 
 
           # Analizin projenin temel dizininde yapılmasını sağlar.
