@@ -30,14 +30,14 @@ name: SonarCloud analysis
 
 on:
   push:
-    branches: [ "main" ] # Projenizin ana dalı
+    branches: [ "main" ] 
   pull_request:
-    branches: [ "main" ] # Projenizin ana dalı
-    types: [opened, synchronize, reopened] # PR olaylarında tetikleme
-  workflow_dispatch: # GitHub UI'dan manuel çalıştırma için
+    branches: [ "main" ] 
+    types: [opened, synchronize, reopened] 
+  workflow_dispatch: 
 
 permissions:
-  pull-requests: write # SonarCloud'un PR'ları yorumlaması için 'write' yetkisi gerekli
+  pull-requests: write 
 
 jobs:
   analysis:
@@ -59,11 +59,11 @@ jobs:
 
       
       - name: Install Node.js dependencies
-        run: npm install # npm kullanıyorsanız `npm install`, yarn kullanıyorsanız `yarn install` yazın.
+        run: npm install 
 
       
       - name: Build project
-        run: npm run build # npm kullanıyorsanız `npm run build`, yarn kullanıyorsanız `yarn build` yazın.
+        run: npm run build 
 
       
       - name: Run tests and generate coverage
@@ -85,6 +85,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # GitHub Secrets'tan gelir
 
         with:
+          projectBaseDir: .
           # Additional arguments for the SonarScanner CLI.
           # Her argüman ayrı bir satırda ve '-' ile başlamalıdır,
           # veya tüm argümanlar tek bir çok satırlı string olarak '>' ile belirtilmelidir.
@@ -92,12 +93,12 @@ jobs:
           args: >
             -Dsonar.projectKey=AyseMutluay_Seyahat_Rehberi
             -Dsonar.organization=aysemutluay
-            -Dsonar.sources=.
-            -Dsonar.tests=.
+            -Dsonar.sources=app,data,.
+            -Dsonar.exclusions=**/.github/**,**/*.test.tsx,**/*.spec.tsx
+            -Dsonar.test.inclusions=**/*.test.tsx,**/*.spec.tsx
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-            -Dsonar.exclusions=**/*.svg
             # -Dsonar.verbose=true 
 
           # Analizin projenin temel dizininde yapılmasını sağlar.
           # Bu parametre 'args:' bloğunun dışında, 'with:' ile aynı seviyede olmalıdır.
-          projectBaseDir: .
+          
