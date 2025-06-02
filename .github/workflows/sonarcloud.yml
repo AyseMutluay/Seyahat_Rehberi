@@ -95,7 +95,7 @@ jobs:
             -Dsonar.sources=.
             -Dsonar.tests=.
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-            # Eğer isterseniz, daha detaylı loglar için aşağıdaki satırı etkinleştirebilirsiniz:
+            
             # -Dsonar.verbose=true 
 
           # Analizin projenin temel dizininde yapılmasını sağlar.
