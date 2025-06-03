@@ -25,9 +25,9 @@ Seyahat rehberi projemiz kullanıcılara yaptığımız anket sonucu tatil terci
 ### Katkı  
 *Bu proje kişisel bir projedir. Dış katkıya kapalıdır.  
 ### İletişim  
-*Soru,görüş,önerileriniz için bize aşağıdaki e-posta adreslerinden ulaşabilirsiniz:
--[mutluayayse230@gmail.com]  
--[mrvzcn10@gmail.com]
--[ayavuzturk21@gmail.com]  
+*Soru,görüş,önerileriniz için bize buradaki e-posta adreslerinden ulaşabilirsiniz:  
+[mutluayayse230@gmail.com]  
+[mrvzcn10@gmail.com]
+[ayavuzturk21@gmail.com]  
 
   
