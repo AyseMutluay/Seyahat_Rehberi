@@ -27,7 +27,7 @@ Seyahat rehberi projemiz kullanıcılara yaptığımız anket sonucu tatil terci
 ### İletişim  
 *Soru,görüş,önerileriniz için bize buradaki e-posta adreslerinden ulaşabilirsiniz:  
 [mutluayayse230@gmail.com]  
-[mrvzcn10@gmail.com]
+[mrvzcn10@gmail.com]  
 [ayavuzturk21@gmail.com]  
 
   
