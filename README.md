@@ -19,7 +19,7 @@ Seyahat rehberi projemiz kullanıcılara yaptığımız anket sonucu tatil terci
 ### JSON Veri Yapısı 
 *sehir: Şehir adı  
 *gezilecekYerler: Ad,Tür  
-*oteller: İsim
+*oteller: İsim  
 *restaurantlar: Yöresel veya genel restaurant önerileri  
 *kampAlanlari: Kamp alanlarının isimleri
 ### Katkı  
