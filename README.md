@@ -10,3 +10,24 @@ Seyahat rehberi projemiz kullanıcılara yaptığımız anket sonucu tatil terci
 *Kullanıcılar siteyi rahatlıkla kullanabilir ve istedikleri bilgilere kolayca ulaşabilirler.  
 *Web sitesi farklı cihazlarda sorunsuz çalışır ve böylece kullanıcılar istedikleri yerden istedikleri zaman siteye erişim sağlayabilirler.  
 *Ziyaret edilecek bölgenin varsa havaalanı, tren istasyonu, otogar, metro istasyonu gibi ulaşım noktalarının konumlarını gösterir.  
+### Kullanılan teknolojiler  
+*Node.js (backend geliştirme)
+*MongoDB (veri depolama)
+*Cursor (veri listeleme,kod yazma)
+*SonarQube (kod kalite analizi)
+*Vercel (deploy)
+### JSON Veri Yapısı 
+*sehir: Şehir adı 
+*gezilecekYerler: Ad,Tür  
+*oteller: İsim
+*restaurantlar: Yöresel veya genel restaurant önerileri  
+*kampAlanlari: Kamp alanlarının isimleri
+### Katkı  
+*Bu proje kişisel bir projedir. Dış katkıya kapalıdır.  
+### İletişim  
+*Soru,görüş,önerileriniz için bize aşağıdaki e-posta adreslerinden ulaşabilirsiniz:
+-[mutluayayse230@gmail.com]  
+-[mrvzcn10@gmail.com]
+-[ayavuzturk21@gmail.com]  
+
+  
