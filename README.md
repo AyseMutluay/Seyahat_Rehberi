@@ -11,13 +11,13 @@ Seyahat rehberi projemiz kullanıcılara yaptığımız anket sonucu tatil terci
 *Web sitesi farklı cihazlarda sorunsuz çalışır ve böylece kullanıcılar istedikleri yerden istedikleri zaman siteye erişim sağlayabilirler.  
 *Ziyaret edilecek bölgenin varsa havaalanı, tren istasyonu, otogar, metro istasyonu gibi ulaşım noktalarının konumlarını gösterir.  
 ### Kullanılan teknolojiler  
-*Node.js (backend geliştirme)
-*MongoDB (veri depolama)
-*Cursor (veri listeleme,kod yazma)
-*SonarQube (kod kalite analizi)
+*Node.js (backend geliştirme)  
+*MongoDB (veri depolama)  
+*Cursor (veri listeleme,kod yazma)  
+*SonarQube (kod kalite analizi)  
 *Vercel (deploy)
 ### JSON Veri Yapısı 
-*sehir: Şehir adı 
+*sehir: Şehir adı  
 *gezilecekYerler: Ad,Tür  
 *oteller: İsim
 *restaurantlar: Yöresel veya genel restaurant önerileri  
